@@ -1,0 +1,32 @@
+[package]
+name = "oxidify-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "oxidify"
+path = "src/main.rs"
+
+[dependencies]
+oxidify-core = { workspace = true }
+oxidify-api = { workspace = true }
+oxidify-audio = { workspace = true }
+oxidify-storage = { workspace = true }
+oxidify-graphics = { workspace = true }
+oxidify-ui = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1"
+eframe = { version = "0.32", default-features = false, features = ["default_fonts", "glow"] }
+egui = "0.32"
+single-instance = "0.3"
+tray-icon = "0.20"
+global-hotkey = "0.7"
+rfd = "0.15"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+directories = "6"
