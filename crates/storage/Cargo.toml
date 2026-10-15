@@ -1,0 +1,15 @@
+[package]
+name = "oxidify-storage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+rusqlite = { version = "0.32", features = ["bundled"] }
+directories = "6"
+walkdir = "2"
+lofty = "0.22"
+keyring = "3"
