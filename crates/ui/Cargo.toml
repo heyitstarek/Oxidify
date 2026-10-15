@@ -1,0 +1,10 @@
+[package]
+name = "oxidify-ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+oxidify-core = { workspace = true }
+serde = { workspace = true }
+egui = "0.32"
