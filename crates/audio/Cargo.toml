@@ -1,0 +1,11 @@
+[package]
+name = "oxidify-audio"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+rodio = { version = "0.20", default-features = false }
+symphonia = { version = "0.5", features = ["aac", "alac", "isomp4", "mp3", "mpa"] }
