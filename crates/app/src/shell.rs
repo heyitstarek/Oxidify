@@ -20,6 +20,7 @@ use oxidify_ui::{
 };
 
 use crate::desktop::{DesktopCommand, DesktopHooks};
+use crate::diag::diag;
 
 const PREF_VOLUME: &str = "volume";
 const PREF_FOLDERS: &str = "library_folders";
@@ -125,6 +126,7 @@ pub struct OxidifyShell {
 
 impl OxidifyShell {
     pub fn create(ctx: &egui::Context, rt: tokio::runtime::Handle) -> anyhow::Result<Self> {
+        diag("shell create start");
         // Slightly translucent panels so the Aether background glows through.
         let mut visuals = egui::Visuals::dark();
         visuals.panel_fill = egui::Color32::from_rgba_unmultiplied(12, 14, 20, 224);
@@ -143,6 +145,7 @@ impl OxidifyShell {
 
         let db_path = data_dir.join("library.sqlite");
         let db = LibraryDb::open(&db_path)?;
+        diag("db open ok");
 
         let get = |k: &str| db.pref_get(k).unwrap_or(None);
         let volume: f32 = get(PREF_VOLUME).and_then(|v| v.parse().ok()).unwrap_or(0.9);
@@ -162,6 +165,7 @@ impl OxidifyShell {
         let service_url: Option<String> = get(PREF_SERVICE_URL).filter(|s| !s.is_empty());
 
         let mut engine = AudioEngine::new().map_err(|e| anyhow::anyhow!("audio: {e}"))?;
+        diag("audio engine ok");
         engine.set_volume(volume);
         engine.set_rate(rate);
         engine.set_pitch(pitch_semitones, pitch_linked);
@@ -186,6 +190,7 @@ impl OxidifyShell {
         }
 
         let (bg_tx, bg_rx) = channel();
+        diag("building desktop hooks");
         let mut shell = Self {
             engine,
             db,
@@ -233,9 +238,11 @@ impl OxidifyShell {
             last_frame: Instant::now(),
         };
 
+        diag("shell struct built");
         if !folders.is_empty() {
             shell.spawn_scan(folders);
         }
+        diag("shell create done");
         Ok(shell)
     }
 
@@ -1108,6 +1115,14 @@ fn remote_search_to_entries(v: &serde_json::Value) -> Vec<QueueEntry> {
 impl eframe::App for OxidifyShell {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.frames += 1;
+        if self.frames == 1 || self.frames % 600 == 0 {
+            diag(&format!(
+                "update frame {} playing={} loading={}",
+                self.frames,
+                self.engine.is_playing(),
+                self.loading
+            ));
+        }
         let dt = self.last_frame.elapsed().as_secs_f32();
         self.last_frame = Instant::now();
         if dt > 0.0 && dt < 1.0 {
